@@ -1,16 +1,20 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Button} from 'react-native';
-import {homeUrl} from '../constants/endpoints/index';
 
 class HomeScreen extends Component {
 
     login() {
-        fetch(homeUrl, {
+        fetch('https:/pickngo-be.azurewebsites.net/detail', {
             method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Origin': '*',
+            },
         })
             .then((response) => response.json())
             .then((jsonResponse) => {
-                this.setState({profilesData: jsonResponse, loading: false});
+                console.log(jsonResponse.full_name);
                 console.log('response: ' + jsonResponse);
             }).catch((err) => console.error(err));
     }
@@ -21,7 +25,7 @@ class HomeScreen extends Component {
                 <Text style={styles.welcome}>Vítejte v aplikaci PickNGo</Text>
                 <View style={styles.optionsContainer}>
                     <View style={styles.optionButton}>
-                        <Button title="Objednat bagetu" color='#009387' onPress={() => this.props.navigation.navigate('Order')}/>
+                        <Button title="Objednat bagetu" color='#009387' onPress={() => this.props.navigation.navigate('MakeOrder')}/>
                     </View>
                     <View style={styles.optionButton}>
                         <Button title="Akční nabídka" color='#009387' onPress={() => this.login()}/>
@@ -29,7 +33,7 @@ class HomeScreen extends Component {
                 </View>
                 <View style={styles.optionsContainer}>
                     <View style={styles.optionButton}>
-                        <Button title="Slevové kupóny" color='#009387' onPress={() => this.props.navigation.navigate('Order')}/>
+                        <Button title="Slevové kupóny" color='#009387' onPress={() => this.props.navigation.navigate('#')}/>
                     </View>
                     <View style={styles.optionButton}>
                         <Button title="Moje objednávky" color='#009387' onPress={() => this.login()}/>
@@ -37,7 +41,7 @@ class HomeScreen extends Component {
                 </View>
                 <View style={styles.optionsContainer}>
                     <View style={styles.lastOptionButton}>
-                        <Button title="Odhlásit se" color='#009387' onPress={() => this.props.navigation.navigate('Order')}/>
+                        <Button title="Odhlásit se" color='#009387' onPress={() => this.props.navigation.navigate('#')}/>
                     </View>
                 </View>
 

@@ -12,11 +12,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './app/screens/HomeScreen';
-import CreateBaguetteScreen from './app/screens/CreateBaguetteScreen';
+
 import Icon from 'react-native-vector-icons/Ionicons';
+import {CookiesProvider} from 'react-cookie';
+
+import {MakeOrderNestedNavigator} from './app/components/navigation/MakeOrderNestedNavigator';
 
 const HomeStack = createStackNavigator();
-const OrderStack = createStackNavigator();
+const MakeOrderStack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const HomeStackScreen = ({navigation}) => (
@@ -38,8 +41,8 @@ const HomeStackScreen = ({navigation}) => (
     </HomeStack.Navigator>
 );
 
-const OrderStackScreen = ({navigation}) => (
-    <OrderStack.Navigator screenOptions={{
+const MakeOrderScreen = ({navigation}) => (
+    <MakeOrderStack.Navigator screenOptions={{
         headerStyle: {
             backgroundColor: '#009387'
         },
@@ -48,13 +51,13 @@ const OrderStackScreen = ({navigation}) => (
             fontWeight: 'bold'
         }
     }}>
-        <OrderStack.Screen name="Order" component={CreateBaguetteScreen} options={{
+        <MakeOrderStack.Screen name="MakeOrder" component={MakeOrderNestedNavigator} options={{
             title: 'Objednávka bagety',
             headerLeft: () => (
                 <Icon.Button name="md-bulb" size={25} backgroundColor='#009387' onPress={() => navigation.openDrawer()}/>
             )
         }} />
-    </OrderStack.Navigator>
+    </MakeOrderStack.Navigator>
 );
 
 export default function App() {
@@ -62,7 +65,7 @@ export default function App() {
         <NavigationContainer>
             <Drawer.Navigator initialRouteName="Home">
                 <Drawer.Screen name="Home" component={HomeStackScreen} />
-                <Drawer.Screen name="Order" component={OrderStackScreen}/>
+                <Drawer.Screen title="Vytvořit bagetu " name="MakeOrder" component={MakeOrderScreen}/>
             </Drawer.Navigator>
         </NavigationContainer>
     );
