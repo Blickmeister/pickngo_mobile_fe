@@ -109,7 +109,7 @@ class CreateBaguetteScreen extends Component {
 
     baguetteOrderCancelHandler = () => {
         // smazání baguetteOrder
-
+        // pokus
         // redirect to Home
     };
 
