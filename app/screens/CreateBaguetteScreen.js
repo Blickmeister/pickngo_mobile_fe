@@ -1,10 +1,15 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, BackHandler} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ASYNC_STORAGE_USER_KEY} from '../screens/LoginScreen';
 import CreateBaguetteComponent from '../components/createbaguette/CreateBaguetteComponent';
-import {createBaguetteOrderUrl} from '../constants/endpoints';
-import {Button} from 'react-native-paper';
+import {
+    createBaguetteOrderUrl,
+    getIngredientsUrl,
+    getIngredientTypeUrl,
+    removeBaguetteOrderUrl,
+} from '../constants/endpoints';
+import {ActivityIndicator, Button} from 'react-native-paper';
 
 class CreateBaguetteScreen extends Component {
     constructor(props) {
@@ -12,7 +17,11 @@ class CreateBaguetteScreen extends Component {
         this.state = {
             user: '',
             orderId: '',
+            ingredients: [],
+            ingredientTypes: [],
             keyForRemount: 1,
+            isLoading: true,
+            baguetteOrderCreated: false,
         };
         //const {cookies} = props;
         //this.state.csrfToken = cookies.get('XSRF-TOKEN');
@@ -25,6 +34,11 @@ class CreateBaguetteScreen extends Component {
     };
 
     componentDidMount() {
+        // při každém načtení stránky (komponenty)
+       this._unsubscribe = this.props.navigation.addListener('focus', () => {
+           this.createBaguetteOrder();
+           this.getIngredientTypesAndIngredients();
+       });
         /* (() => {
              let user = AsyncStorage.getItem(ASYNC_STORAGE_USER_KEY);
              if (user !== null && user !== undefined && user !== '') {
@@ -42,35 +56,25 @@ class CreateBaguetteScreen extends Component {
         //console.log('orderId: ' + this.props.orderId);
         //if (this.props.orderId === undefined) {
         // nemáme ještě orderId -> nová objednávka
-        fetch(createBaguetteOrderUrl, {
-            credentials: 'include',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*',
-            },
-        })
-            .then((response) => {
-                if (response.ok) {
-                    console.log('Objednávka vytvořena');
-                    response.json()
-                        .then((jsonResponse) => {
-                            this.setState({orderId: jsonResponse.id});
-                            console.log('resík pusík: ' + jsonResponse.id);
-                        });
-                } else {
-                    response.json()
-                        .then((jsonResponse) =>
-                            console.error('Objednávku se nepodařilo vytvořit: ' + jsonResponse.message));
-                }
-            })
-            .catch((error) => console.log('Chyba při vytváření objednávky: ' + error));
+        // vytvoření nové objednávky
+        //this.createBaguetteOrder();
         //  } else {
         // předání orderId pro vytvoření další bagety
         //  this.setState({orderId: this.props.orderId});
         //  }
+        // registrace listeneru pro event při stisknutí zpětného tlačítka
+        this.backHandler = BackHandler.addEventListener(
+            'hwBackPress',
+            this.backAction,
+        );
+        // získání typů ingrediencí a ingrediencí
+        //this.getIngredientTypesAndIngredients();
     }
+
+    /*refresh = () => {
+        this.createBaguetteOrder();
+        this.getIngredientTypesAndIngredients();
+    };*/
 
     retrieveData = async () => {
         try {
@@ -85,6 +89,71 @@ class CreateBaguetteScreen extends Component {
             console.log('READ ERROR: ' + e);
         }
     };
+
+    componentWillUnmount() {
+        // odregistrování listeneru pro event při stisknutí zpětného tlačítka
+        this.backHandler.remove();
+        this._unsubscribe();
+    }
+
+    createBaguetteOrder() {
+        fetch(createBaguetteOrderUrl, {
+            credentials: 'include',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Origin': '*',
+            },
+        })
+            .then((response) => {
+                //this.setState({baguetteOrderCreated: true}); // TODO pak pryc
+                if (response.ok) {
+                    console.log('Objednávka vytvořena');
+                    response.json()
+                        .then((jsonResponse) => {
+                            this.setState({orderId: jsonResponse.id, baguetteOrderCreated: true});
+                            console.log('Create order response ID: ' + jsonResponse.id);
+                        });
+                } else {
+                    response.json()
+                        .then((jsonResponse) =>
+                            console.error('Objednávku se nepodařilo vytvořit: ' + jsonResponse.message));
+                }
+            })
+            .catch((error) => console.log('Chyba při vytváření objednávky: ' + error));
+    }
+
+    getIngredientTypesAndIngredients() {
+        fetch(getIngredientTypeUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Origin': '*'
+            }
+        })
+            .then((response) => response.json())
+            .then((jsonResponse) => {
+                this.setState({ingredientTypes: jsonResponse});
+                this.getIngredients();
+            })
+            .catch((err) => console.error('Chyba při získání typů ingrediencí: ' + err));
+    }
+
+    getIngredients() {
+        fetch(getIngredientsUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Origin': '*'
+            }
+        })
+            .then((response) => response.json())
+            .then((jsonResponse) => this.setState({ingredients: jsonResponse, isLoading: false}))
+            .catch((err) => console.error('Chyba při získání ingrediencí: ' + err));
+    }
 
     logout() {
         /* fetch('http://192.168.100.12:8080/api/logout', {
@@ -107,28 +176,74 @@ class CreateBaguetteScreen extends Component {
         }));
     };
 
-    baguetteOrderCancelHandler = () => {
+    // handler pro zrušení objednávky bagety
+    cancelBaguetteOrderHandler = () => {
         // smazání baguetteOrder
-        // pokus
+        this.deleteBaguetteOrder();
         // redirect to Home
+        this.props.navigation.navigate('Home');
     };
+
+    // handler pro přechod k souhrnu objednávky
+    goToOrderSummaryHandler = () => {
+        this.props.navigation.navigate('OrderSummary', {orderId: this.state.orderId});
+    };
+
+    // handler pro stistkuní tlačítka zpět v mobil zařízení (funguje pouze pro Android)
+    backAction = () => {
+        this.deleteBaguetteOrder();
+    };
+
+    deleteBaguetteOrder() {
+        fetch(removeBaguetteOrderUrl + this.state.orderId, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Origin': '*'
+            }
+        })
+            .then((response) => {
+                if (response.ok) {
+                    console.log('Objednávka úspěšně smazána');
+                } else {
+                    response.json()
+                        .then((jsonResponse) =>
+                            console.error('Objednávku se nepodařilo smazat: ' + jsonResponse.message));
+                }
+            })
+            .catch((error) => console.error('Objednávku se nepodařilo smazat: ' + error));
+    }
 
     render() {
         let definedUser = this.state.user !== undefined;
-
+        let renderBaguetteComponent = false;
+        if (!this.state.isLoading && this.state.baguetteOrderCreated) {
+            renderBaguetteComponent = true;
+            console.log("render? " + renderBaguetteComponent + " ID " + this.state.orderId);
+        }
         return (
             <View style={styles.container}>
                 <View style={styles.containerWelcome}>
                     <Text style={styles.welcome}>PickNGo - Návrh bagety</Text>
                 </View>
-                {definedUser && <Text style={styles.textCenter}>Přihlášený uživatel: {this.state.user}</Text>}
-                <CreateBaguetteComponent key={this.state.keyForRemount} orderId={this.state.orderId}/>
-                <View style={styles.containerRow}>
-                    <Button mode="contained" color="blue" onPress={this.addNextBaguetteHandler}>Přidat další
-                        bagetu</Button>
-                    <Button mode="contained" color="green">Souhrn objednávky</Button>
-                    <Button mode="contained" color="red" onPress={this.baguetteOrderCancelHandler}>Zrušit</Button>
-                </View>
+                {!renderBaguetteComponent ?
+                    <ActivityIndicator size='large' color='green'/> :
+                    <View>
+                        {definedUser && <Text style={styles.textCenter}>Přihlášený uživatel: {this.state.user}</Text>}
+                        <CreateBaguetteComponent key={this.state.keyForRemount} orderId={this.state.orderId}
+                                                 ingredients={this.state.ingredients}
+                                                 ingredientTypes={this.state.ingredientTypes}/>
+                        <View style={{padding: 10}}>
+                            <Button contentStyle={{padding: 2}} mode="contained" color="blue" onPress={this.addNextBaguetteHandler}
+                                    style={{margin: 5}}>Přidat další bagetu</Button>
+                            <Button contentStyle={{padding: 2}} mode="contained" color="green" onPress={this.goToOrderSummaryHandler}
+                                    style={{margin: 5}}>Souhrn objednávky</Button>
+                            <Button contentStyle={{padding: 2}} mode="contained" color="red" onPress={this.cancelBaguetteOrderHandler}
+                                    style={{margin: 5}}>Zrušit</Button>
+                        </View>
+                    </View>
+                }
             </View>
         );
     }
@@ -178,5 +293,8 @@ const styles = StyleSheet.create({
     },
     containerRow: {
         flexDirection: 'row',
+        padding: 5,
     },
+    flexContainer: {
+    }
 });

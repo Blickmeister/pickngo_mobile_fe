@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, ActivityIndicator} from 'react-native';
 import RadioButtonRN from 'radio-buttons-react-native';
-import {createBaguetteItemUrl, getIngredientsUrl, getIngredientTypeUrl} from '../../constants/endpoints';
+import {createBaguetteItemUrl,getBaguetteItemDetailUrl} from '../../constants/endpoints';
 import ItemComponent from './ItemComponent';
 import {DataTable} from 'react-native-paper';
 
@@ -15,9 +15,7 @@ class CreateBaguetteComponent extends Component {
                 state: '',
                 itemBaguettes: [],
             },
-            ingredients: [],
-            ingredientTypes: [],
-            baguetteId: '',
+            baguetteItem: {},
             isLoading: true,
         };
         //const {cookies} = props;
@@ -28,15 +26,42 @@ class CreateBaguetteComponent extends Component {
     componentDidMount() {
         // vytvoření nové bagety
         this.createNewBaguette();
-        // získání typů ingrediencí
-        this.getIngredientTypes();
-        // získání ingrediencí
-        this.getIngredients();
     }
 
     createNewBaguette() {
+        console.log("BAAAF: " + this.props.orderId);
         fetch(createBaguetteItemUrl + this.props.orderId, {
+            credentials: 'include',
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Origin': '*',
+            }
+        })
+            .then((response) => {
+                if (response.ok) {
+                    console.log('Bageta vytvořena');
+                    response.json()
+                        .then((jsonResponse) => {
+                            this.setState({baguetteItem: jsonResponse, isLoading: false});
+                            console.log('create baguette item ID: ' + jsonResponse.id);
+                        });
+                } else {
+                    response.json()
+                        .then((jsonResponse) =>
+                            console.error('Bagetu se nepodařilo vytvořit: ' + jsonResponse.message));
+                }
+            })
+            .catch((error) => console.log('Chyba při vytváření bagety: ' + error));
+    }
+
+    // Handler pro změnu množství v itemu
+    onItemChangeHandler = () => {
+        // refresh celkové ceny aktuální bagety při změně itemu (položky)
+        // kvůli zajištění konzistence s BE a DB fetch aktuálního baguette itemu
+        fetch(getBaguetteItemDetailUrl + this.state.baguetteItem.id, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true,
@@ -45,62 +70,35 @@ class CreateBaguetteComponent extends Component {
         })
             .then((response) => response.json())
             .then((jsonResponse) => {
-                this.setState({baguetteId: jsonResponse.id});
-                console.log(jsonResponse);
-            })
-            .catch((error) => console.log('Chyba při vytvoření bagety: ' + error));
-    }
-
-    getIngredientTypes() {
-        fetch(getIngredientTypeUrl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*',
-            },
-        })
-            .then((response) => response.json())
-            .then((jsonResponse) => this.setState({ingredientTypes: jsonResponse}),
-            ).catch((err) => console.error('Chyba při získání typů ingrediencí: ' + err));
-    }
-
-    getIngredients() {
-        fetch(getIngredientsUrl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*',
-            },
-        })
-            .then((response) => response.json())
-            .then((jsonResponse) => this.setState({ingredients: jsonResponse, isLoading: false}),
-            ).catch((err) => console.error('Chyba při získání ingrediencí: ' + err));
-    }
+                this.setState({baguetteItem: jsonResponse});
+                console.log("cena změna: " + jsonResponse.price)
+                },
+            ).catch((err) => console.error('Chyba při získání baguetteItem: ' + err));
+    };
 
     render() {
         return (
-            <View style={styles.ingredientContainer}>
+            <View>
                 {this.state.isLoading ? <ActivityIndicator size="large" color="green"/> :
-                    <View>
-                        {this.state.ingredientTypes.map((type, index) => {
+                    <View style={styles.ingredientContainer}>
+                        {this.props.ingredientTypes.map((type, index) => {
                             // dělení ingrediencí dle jejich typu
                             let ingredientsOfOneType = [];
-                            this.state.ingredients.forEach((element) => {
+                            this.props.ingredients.forEach((element) => {
                                 if (element.ingredientType.id === type.id) {
                                     ingredientsOfOneType.push(element);
-                                    console.log(element);
+                                    console.log("render-oneTypeIng: " + element);
                                 }
                             });
                             // pokud jde o počivo, tak radio buttons
                             if (type.name === 'Pečivo') {
                                 // nejrpve vytažení názvů pro zobrazení
-                                let pastryNames = [];
-                                ingredientsOfOneType.forEach((pastry) => pastryNames.push(pastry.name));
+                                let pastryNamesWithPrice = [];
+                                ingredientsOfOneType.forEach((pastry) => pastryNamesWithPrice.push(pastry.name
+                                    + "  cena: " + pastry.price + " Kč"));
                                 // vytvoření Radio Button labelů
                                 let radioButtonsInputData = [];
-                                pastryNames.forEach((name) => radioButtonsInputData.push({label: name}));
+                                pastryNamesWithPrice.forEach((name) => radioButtonsInputData.push({label: name}));
                                 return (
                                     <View key={index} style={styles.typeContainer}>
                                         <Text style={{fontWeight: 'bold'}}>Typ bagety:</Text>
@@ -120,9 +118,12 @@ class CreateBaguetteComponent extends Component {
                                         {ingredientsOfOneType.map((ingredient, index) => {
                                             return (
                                                 <ItemComponent key={index} ingredient={ingredient}
-                                                               baguetteId={this.state.baguetteId}/>
+                                                               baguetteId={this.state.baguetteItem.id}
+                                                               onItemChange={this.onItemChangeHandler}/>
                                             );
                                         })}
+                                        <Text style={{textAlign: 'right'}}>Celková cena
+                                            bagety: {this.state.baguetteItem.price} Kč</Text>
                                     </View>
                                 );
                             }
@@ -153,6 +154,7 @@ const styles = StyleSheet.create({
     },
     containerRow: {
         flexDirection: 'row',
+        width: 100
     },
     itemMargin: {
         justifyContent: 'space-between',

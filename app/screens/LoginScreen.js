@@ -18,9 +18,12 @@ class LoginScreen extends Component {
     }
 
     componentDidMount() {
-        // zjistí jestli je uživatel lognutý
-        // -> podle toho bud redirect na createBaguetteScreen nebo načtení WebView a login
-        this.getUserDetail();
+        // při každém načtení stránky (komponenty)
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
+            // zjistí jestli je uživatel lognutý
+            // -> podle toho bud redirect na createBaguetteScreen nebo načtení WebView a login
+            this.getUserDetail();
+        });
     }
 
     getUserDetail() {
@@ -50,6 +53,11 @@ class LoginScreen extends Component {
             setTimeout( () => this.setState({isLoading: false}), 2000);
             console.log('Uživatel není přihlášený');
         });
+    }
+
+    componentWillUnmount() {
+        // odregistrování listeneru pro event při stisknutí zpětného tlačítka
+        this._unsubscribe();
     }
 
     webview = null;

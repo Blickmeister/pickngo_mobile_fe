@@ -11,25 +11,30 @@ class ItemComponent extends Component {
 
         this.state = {
             number: 0,
-            firstChange: true,
+            itemId: ''
         };
     }
 
     incrementNumber = () => {
+        let createNewItem = false;
+        if (this.state.number === 0) createNewItem = true;
         this.setState({number: this.state.number + 1});
-        this.changeItemState();
+        let number = this.state.number + 1;
+        this.changeItemState(number, createNewItem);
     };
 
     decrementNumber = () => {
         this.setState({number: this.state.number - 1});
-        this.changeItemState();
+        let number = this.state.number - 1;
+        this.changeItemState(number);
     };
 
-    changeItemState() {
+    changeItemState(number, createNewItem) {
         // pokud se poprvé mění stav itemu
         const ingredient = this.props.ingredient;
-        if (this.state.firstChange) {
+        if (this.state.itemId === '' || createNewItem) {
             // vytvoření itemu
+            console.log("url: " + createItemUrl + this.props.baguetteId);
             fetch(createItemUrl + this.props.baguetteId, {
                 method: 'POST',
                 headers: {
@@ -38,7 +43,7 @@ class ItemComponent extends Component {
                     'Access-Control-Allow-Origin': '*'
                 },
                 body: JSON.stringify({
-                    amount: this.state.number,
+                    amount: number,
                     price: ingredient.price,
                     ingredient: ingredient
                 })
@@ -46,16 +51,20 @@ class ItemComponent extends Component {
                 .then((response) => {
                     if (response.ok) {
                         console.log('Úspěšné vytvoření itemu na serveru');
+                        response.json().then((item) => this.setState({itemId: item.id}))
                     } else {
                         response.json()
                             .then((jsonResponse) =>
                                 console.error('Nepodařilo se vytvořit item na serveru: ' + jsonResponse.message));
                     }
+                    // update ceny bagety
+                    this.props.onItemChange();
                 })
                 .catch((err) => console.log('Nepodařilo se vytvořit item na serveru: ' + err));
         } else {
             // pokud již byl item vytvořen -> update
-            fetch(updateItemUrl + this.props.ingredient.id + "?amount=" + this.state.number, {
+            console.log("URL: " + updateItemUrl + this.state.itemId + "?amount=" + number);
+            fetch(updateItemUrl + this.state.itemId + "?amount=" + number, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -71,6 +80,8 @@ class ItemComponent extends Component {
                             .then((jsonResponse) =>
                                 console.error('Nepodařilo se upravit item na serveru: ' + jsonResponse.message));
                     }
+                    // update ceny bagety
+                    this.props.onItemChange();
                 })
                 .catch((err) => console.log('Nepodařilo se upravit item na serveru: ' + err));
         }
