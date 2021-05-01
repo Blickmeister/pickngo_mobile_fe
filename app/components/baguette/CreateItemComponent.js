@@ -4,7 +4,7 @@ import {CircleButton} from '../elements/CircleButton';
 import {DataTable} from 'react-native-paper';
 import {createItemUrl, updateItemUrl} from '../../constants/endpoints';
 
-class ItemComponent extends Component {
+class CreateItemComponent extends Component {
 
     constructor(props) {
         super(props);
@@ -153,4 +153,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ItemComponent;
+export default CreateItemComponent;

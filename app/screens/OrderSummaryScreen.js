@@ -1,16 +1,22 @@
 import React, {Component} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
-import {getBaguetteOrderDetailUrl, removeBaguetteItemUrl, confirmBaguetteOrderUrl} from '../constants/endpoints';
-import {ActivityIndicator, DataTable, Button} from 'react-native-paper';
+import {
+    confirmBaguetteOrderUrl,
+    getBaguetteOrderDetailUrl,
+    removeBaguetteItemUrl,
+    updateBaguetteOrderUrl,
+} from '../constants/endpoints';
+import {ActivityIndicator, DataTable, Button, TextInput} from 'react-native-paper';
 
-class OrderSummaryPage extends Component {
+class OrderSummaryScreen extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
             order: {},
-            isLoading: true
+            isLoading: true,
+            note: '',
         };
     }
 
@@ -20,18 +26,18 @@ class OrderSummaryPage extends Component {
     }
 
     getOrderById() {
-        fetch(getBaguetteOrderDetailUrl + this.props.state.params.orderId, {
+        fetch(getBaguetteOrderDetailUrl + this.props.route.params.orderId, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*'
-            }
+                'Access-Control-Allow-Origin': '*',
+            },
         })
             .then((response) => response.json())
             .then((jsonResponse) => {
                 this.setState({order: jsonResponse, isLoading: false});
-                this.getIngredients();
+                console.log(jsonResponse.id);
             })
             .catch((err) => console.error('Chyba při získání typů ingrediencí: ' + err));
     }
@@ -42,8 +48,8 @@ class OrderSummaryPage extends Component {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*'
-            }
+                'Access-Control-Allow-Origin': '*',
+            },
         })
             .then((response) => {
                 if (response.ok) {
@@ -57,7 +63,65 @@ class OrderSummaryPage extends Component {
             .catch((error) => console.error('Bagetu se nepodařilo smazat: ' + error));
     };
 
+    onSubmitHandler = () => {
+        // odeslání objednávky
+        this.sendBaguetteOrder();
+    };
+
+    sendBaguetteOrder() {
+        // odeslání poznámky na BE
+        const requestParam = '?note=' + this.state.note;
+        fetch(updateBaguetteOrderUrl + this.state.order.id + requestParam, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Origin': '*'
+            }
+        })
+            .then((response) => {
+                if (response.ok) {
+                    console.log('Úspěšný edit objednávky na serveru');
+                    // odeslání (potvrzení) kompletní objednávky
+                    this.confirmBaguetteOrder();
+                } else {
+                    response.json()
+                        .then((jsonResponse) =>
+                            console.error('Nepodařilo se upravit objednávku na serveru: ' + jsonResponse.message));
+                }
+            })
+            .catch((err) => console.log('Nepodařilo se upravit objednávku na serveru: ' + err));
+
+    }
+
+    // potvrzení objednávky na BE
+    confirmBaguetteOrder() {
+        let actualDate = new Date();
+        const requestParam = '?date=' + actualDate;
+        fetch(confirmBaguetteOrderUrl + this.state.order.id + requestParam, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Origin': '*'
+            }
+        })
+            .then((response) => {
+                if (response.ok) {
+                    console.log('Úspěšné potvrzení objednávky na serveru');
+                    // redirect
+                    this.props.navigation.navigate('ActualOrderState', {orderId: this.state.order.id})
+                } else {
+                    response.json()
+                        .then((jsonResponse) =>
+                            console.error('Nepodařilo se potvrdit objednávku na serveru: ' + jsonResponse.message));
+                }
+            })
+            .catch((err) => console.log('Nepodařilo se potvrdit objednávku na serveru: ' + err));
+    }
+
     render() {
+        const baguetteItems = this.state.order.baguetteItems;
         return (
             <View style={styles.container}>
                 <View style={styles.containerWelcome}>
@@ -65,7 +129,7 @@ class OrderSummaryPage extends Component {
                 </View>
                 {this.state.isLoading ? <ActivityIndicator size='large' color='green'/> :
                     <View style={{marginTop: 5}}>
-                        {this.state.order.baguetteItems.map((baguette, index) => {
+                        {baguetteItems.map((baguette, index) => {
                             return (
                                 <View>
                                     <Text>Bageta číslo {++index}</Text>
@@ -82,7 +146,7 @@ class OrderSummaryPage extends Component {
                                         <Button contentStyle={{padding: 2}} mode="contained" color="blue"
                                                 onPress={() => this.props.navigation
                                                     .navigate('UpdateBaguette',
-                                                        {baguetteId: baguette.id})}>Upravit</Button>
+                                                        {baguette: baguette, index: index})}>Upravit</Button>
                                         <Button contentStyle={{padding: 2}} mode="contained" color="red"
                                                 onPress={this.deleteBaguetteHandler}>Smazat</Button>
                                     </View>
@@ -91,14 +155,16 @@ class OrderSummaryPage extends Component {
                         })}
                     </View>
                 }
-                <Text>// formular</Text>
-                <Button>Odeslat objednávku</Button>
+                <TextInput label="Vaše poznámka - např. čas vyzvednutí objednávky či možnost zapéct bagetu"
+                           value={this.state.note} onChangeText={(text) => this.setState({note: text})}/>
+                <Button contentStyle={{padding: 2}} mode="contained" color="green"
+                        onPress={this.onSubmitHandler}>Odeslat objednávku</Button>
             </View>
         );
     }
 }
 
-export default OrderSummaryPage;
+export default OrderSummaryScreen;
 
 // stylizace
 const styles = StyleSheet.create({

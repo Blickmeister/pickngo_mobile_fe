@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {StyleSheet, Text, View, BackHandler} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ASYNC_STORAGE_USER_KEY} from '../screens/LoginScreen';
-import CreateBaguetteComponent from '../components/createbaguette/CreateBaguetteComponent';
+import CreateBaguetteDataComponent from '../components/baguette/CreateBaguetteDataComponent';
 import {
     createBaguetteOrderUrl,
     getIngredientsUrl,
@@ -231,9 +231,9 @@ class CreateBaguetteScreen extends Component {
                     <ActivityIndicator size='large' color='green'/> :
                     <View>
                         {definedUser && <Text style={styles.textCenter}>Přihlášený uživatel: {this.state.user}</Text>}
-                        <CreateBaguetteComponent key={this.state.keyForRemount} orderId={this.state.orderId}
-                                                 ingredients={this.state.ingredients}
-                                                 ingredientTypes={this.state.ingredientTypes}/>
+                        <CreateBaguetteDataComponent key={this.state.keyForRemount} orderId={this.state.orderId}
+                                                     ingredients={this.state.ingredients}
+                                                     ingredientTypes={this.state.ingredientTypes}/>
                         <View style={{padding: 10}}>
                             <Button contentStyle={{padding: 2}} mode="contained" color="blue" onPress={this.addNextBaguetteHandler}
                                     style={{margin: 5}}>Přidat další bagetu</Button>

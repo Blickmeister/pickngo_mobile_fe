@@ -2,21 +2,15 @@ import React, {Component} from 'react';
 import {StyleSheet, Text, View, ActivityIndicator} from 'react-native';
 import RadioButtonRN from 'radio-buttons-react-native';
 import {createBaguetteItemUrl,getBaguetteItemDetailUrl} from '../../constants/endpoints';
-import ItemComponent from './ItemComponent';
+import CreateItemComponent from './CreateItemComponent';
 import {DataTable} from 'react-native-paper';
 
-class CreateBaguetteComponent extends Component {
+class CreateBaguetteDataComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            order: {
-                customer: {},
-                date: '',
-                state: '',
-                itemBaguettes: [],
-            },
             baguetteItem: {},
-            isLoading: true,
+            isLoading: true
         };
         //const {cookies} = props;
         //this.state.csrfToken = cookies.get('XSRF-TOKEN');
@@ -117,9 +111,9 @@ class CreateBaguetteComponent extends Component {
                                         <Header/>
                                         {ingredientsOfOneType.map((ingredient, index) => {
                                             return (
-                                                <ItemComponent key={index} ingredient={ingredient}
-                                                               baguetteId={this.state.baguetteItem.id}
-                                                               onItemChange={this.onItemChangeHandler}/>
+                                                <CreateItemComponent key={index} ingredient={ingredient}
+                                                                     baguetteId={this.state.baguetteItem.id}
+                                                                     onItemChange={this.onItemChangeHandler}/>
                                             );
                                         })}
                                         <Text style={{textAlign: 'right'}}>Celková cena
@@ -163,4 +157,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CreateBaguetteComponent;
+export default CreateBaguetteDataComponent;

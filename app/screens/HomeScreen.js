@@ -3,6 +3,14 @@ import {StyleSheet, Text, View, Button} from 'react-native';
 
 class HomeScreen extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            actualOrderId: 'nic'
+        }
+    }
+
     login() {
         fetch('https:/pickngo-be.azurewebsites.net/detail', {
             method: 'GET',
@@ -20,6 +28,13 @@ class HomeScreen extends Component {
     }
 
     render() {
+        let firstOrderSend = false;
+        if (this.props.route.params !== undefined) {
+            console.log("TOTU");
+            firstOrderSend = true;
+            this.setState({actualOrderId: this.props.state.params.orderId})
+        }
+        console.log(this.state.actualOrderId);
         return (
             <View style={styles.container}>
                 <Text style={styles.welcome}>Vítejte v aplikaci PickNGo</Text>
@@ -33,15 +48,16 @@ class HomeScreen extends Component {
                 </View>
                 <View style={styles.optionsContainer}>
                     <View style={styles.optionButton}>
-                        <Button title="Slevové kupóny" color='#009387' onPress={() => this.props.navigation.navigate('#')}/>
+                        <Button title="Aktivní objednávka" color='#009387' onPress={() => this.props.navigation
+                            .navigate('ActualOrderState', {orderId: this.state.actualOrderId})}/>
                     </View>
                     <View style={styles.optionButton}>
-                        <Button title="Moje objednávky" color='#009387' onPress={() => this.login()}/>
+                        <Button title="Historie objednávek" color='#009387' onPress={() => this.login()}/>
                     </View>
                 </View>
                 <View style={styles.optionsContainer}>
                     <View style={styles.lastOptionButton}>
-                        <Button title="Odhlásit se" color='#009387' onPress={() => this.props.navigation.navigate('#')}/>
+                        <Button title="Slevové kupóny" color='#009387' onPress={() => this.props.navigation.navigate('#')}/>
                     </View>
                 </View>
 
