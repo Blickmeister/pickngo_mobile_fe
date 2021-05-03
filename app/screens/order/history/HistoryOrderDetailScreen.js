@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {getBaguetteOrderDetailUrl} from '../../../constants/endpoints';
 import {Text, View, StyleSheet} from 'react-native';
 import {ActivityIndicator} from 'react-native-paper';
-import {HistoryBaguetteDataComponent} from '../../../components/baguette/history/HistoryBaguetteDataComponent';
+import HistoryBaguetteDataComponent from '../../../components/baguette/history/HistoryBaguetteDataComponent';
 
 class HistoryOrderDetailScreen extends Component {
 
@@ -46,7 +46,7 @@ class HistoryOrderDetailScreen extends Component {
                     <View>
                         {this.state.order.baguetteItems.map((baguette, index) => {
                             return (
-                                <HistoryBaguetteDataComponent key={++index} baguette={baguette}/>
+                                <HistoryBaguetteDataComponent key={index} index={++index} baguette={baguette}/>
                                 )
                         })}
                     </View>

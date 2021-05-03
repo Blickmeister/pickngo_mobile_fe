@@ -1,26 +1,30 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Button, DataTable} from 'react-native-paper';
 
-export const HistoryBaguetteDataComponent = () => (
-    <View style={styles.baguetteContainer}>
-        <Text style={styles.textCommon}>Bageta č.{this.props.key}</Text>
-        <Text style={styles.textCommon}>Obsah bagety:</Text>
-        <Header/>
-        {this.props.baguette.items.map((item, index) => {
-            return (
-                <DataTable.Row key={index}>
-                    <DataTable.Cell>{item.ingredient.name}</DataTable.Cell>
-                    <DataTable.Cell>{item.amount}</DataTable.Cell>
-                    <DataTable.Cell>{item.price}</DataTable.Cell>
-                </DataTable.Row>
-                )
-        })}
-        <Text style={styles.textCommon}>Cena za bagetu: {this.props.baguette.price}</Text>
-        <Button contentStyle={{padding: 2}} mode="contained" color="blue"
-                onPress={() => this.props.navigation.goBack()}>Zpět na přehled objednávek</Button>
-    </View>
-);
+class HistoryBaguetteDataComponent extends Component {
+
+    render() {
+        return (
+            <View style={styles.baguetteContainer}>
+                <Text style={styles.textCommonBold}>Bageta č.{this.props.index}:</Text>
+                <Header/>
+                {this.props.baguette.items.map((item, index) => {
+                    return (
+                        <DataTable.Row key={index}>
+                            <DataTable.Cell>{item.ingredient.name}</DataTable.Cell>
+                            <DataTable.Cell>{item.amount}</DataTable.Cell>
+                            <DataTable.Cell>{item.price} Kč</DataTable.Cell>
+                        </DataTable.Row>
+                    )
+                })}
+                <Text style={styles.textCommon}>Cena za bagetu: {this.props.baguette.price} Kč</Text>
+                <Button style={{marginTop: 15}} contentStyle={{padding: 2}} mode="contained" color="blue"
+                        onPress={() => this.props.navigation.goBack()}>Zpět na přehled objednávek</Button>
+            </View>
+        )
+    }
+}
 
 const Header = () => (
     <DataTable.Header>
@@ -29,6 +33,8 @@ const Header = () => (
         <DataTable.Title>Cena za položku</DataTable.Title>
     </DataTable.Header>
 );
+
+export default HistoryBaguetteDataComponent;
 
 // stylizace
 const styles = StyleSheet.create({
@@ -42,6 +48,10 @@ const styles = StyleSheet.create({
         width: 100
     },
     textCommon: {
-        margin: 2
+        margin: 5
+    },
+    textCommonBold: {
+        margin: 5,
+        fontWeight: 'bold'
     }
 });
