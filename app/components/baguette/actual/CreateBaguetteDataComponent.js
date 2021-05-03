@@ -1,7 +1,12 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, ActivityIndicator} from 'react-native';
 import RadioButtonRN from 'radio-buttons-react-native';
-import {createBaguetteItemUrl,getBaguetteItemDetailUrl} from '../../constants/endpoints';
+import {
+    createBaguetteItemUrl,
+    createItemUrl,
+    getBaguetteItemDetailUrl,
+    removeItemUrl
+} from '../../../constants/endpoints';
 import CreateItemComponent from './CreateItemComponent';
 import {DataTable} from 'react-native-paper';
 
@@ -10,7 +15,8 @@ class CreateBaguetteDataComponent extends Component {
         super(props);
         this.state = {
             baguetteItem: {},
-            isLoading: true
+            isLoading: true,
+            pastryId: ''
         };
         //const {cookies} = props;
         //this.state.csrfToken = cookies.get('XSRF-TOKEN');
@@ -54,6 +60,10 @@ class CreateBaguetteDataComponent extends Component {
     onItemChangeHandler = () => {
         // refresh celkové ceny aktuální bagety při změně itemu (položky)
         // kvůli zajištění konzistence s BE a DB fetch aktuálního baguette itemu
+        this.getBaguette();
+    };
+
+    getBaguette() {
         fetch(getBaguetteItemDetailUrl + this.state.baguetteItem.id, {
             method: 'GET',
             headers: {
@@ -64,11 +74,75 @@ class CreateBaguetteDataComponent extends Component {
         })
             .then((response) => response.json())
             .then((jsonResponse) => {
-                this.setState({baguetteItem: jsonResponse});
-                console.log("cena změna: " + jsonResponse.price)
+                    this.setState({baguetteItem: jsonResponse});
+                    console.log("cena změna: " + jsonResponse.price)
                 },
             ).catch((err) => console.error('Chyba při získání baguetteItem: ' + err));
+    }
+
+    pastryChangeHandler = (ingredient) => {
+        // pokud se poprvé mění stav itemu
+        if (this.state.pastryId === '') {
+            // vytvoření itemu
+            this.createNewPastry(ingredient);
+        } else {
+            // pokud již byl item vytvořen -> dle definice BE smazat a vytvořit nový
+            this.deletePastry(ingredient);
+
+        }
     };
+
+    createNewPastry(ingredient) {
+        console.log("url: " + createItemUrl + this.state.baguetteItem.id);
+        fetch(createItemUrl + this.state.baguetteItem.id, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({
+                amount: 1,
+                price: ingredient.price,
+                ingredient: ingredient
+            })
+        })
+            .then((response) => {
+                if (response.ok) {
+                    console.log('Úspěšné vytvoření itemu na serveru');
+                    response.json().then((item) => this.setState({pastryId: item.id}))
+                } else {
+                    response.json()
+                        .then((jsonResponse) =>
+                            console.error('Nepodařilo se vytvořit item na serveru: ' + jsonResponse.message));
+                }
+                // update ceny bagety
+                this.getBaguette();
+            })
+            .catch((err) => console.log('Nepodařilo se vytvořit item na serveru: ' + err));
+    }
+
+    deletePastry(ingredient) {
+        fetch(removeItemUrl + this.state.pastryId, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Origin': '*'
+            }
+        })
+            .then((response) => {
+                if (response.ok) {
+                    console.log('Item úspěšně smazán');
+                    this.createNewPastry(ingredient);
+                } else {
+                    response.json()
+                        .then((jsonResponse) =>
+                            console.error('Item se nepodařilo smazat: ' + jsonResponse.message));
+                }
+            })
+            .catch((error) => console.error('Item se nepodařilo smazat: ' + error));
+    }
 
     render() {
         return (
@@ -87,18 +161,22 @@ class CreateBaguetteDataComponent extends Component {
                             // pokud jde o počivo, tak radio buttons
                             if (type.name === 'Pečivo') {
                                 // nejrpve vytažení názvů pro zobrazení
-                                let pastryNamesWithPrice = [];
-                                ingredientsOfOneType.forEach((pastry) => pastryNamesWithPrice.push(pastry.name
-                                    + "  cena: " + pastry.price + " Kč"));
-                                // vytvoření Radio Button labelů
+                                let pastryNamesWithPriceAndItemId = [];
+                                ingredientsOfOneType.forEach((pastry) =>
+                                    pastryNamesWithPriceAndItemId.push({
+                                        name: pastry.name + "  cena: " + pastry.price + " Kč", pastry: pastry}));
+
+                                // vytvoření Radio Button labelů s příslušnou ingrediencí
                                 let radioButtonsInputData = [];
-                                pastryNamesWithPrice.forEach((name) => radioButtonsInputData.push({label: name}));
+                                pastryNamesWithPriceAndItemId.forEach((element) =>
+                                    radioButtonsInputData.push({label: element.name, pastry: element.pastry}));
                                 return (
                                     <View key={index} style={styles.typeContainer}>
                                         <Text style={{fontWeight: 'bold'}}>Typ bagety:</Text>
                                         <RadioButtonRN
                                             data={radioButtonsInputData}
-                                            selectedBtn={(e) => console.log(e)}
+                                            initial={1}
+                                            selectedBtn={(e) => this.pastryChangeHandler(e.pastry)}
                                         />
                                     </View>
                                 );

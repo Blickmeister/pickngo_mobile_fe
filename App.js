@@ -9,17 +9,7 @@
 import 'react-native-gesture-handler';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './app/screens/HomeScreen';
-
-import Icon from 'react-native-vector-icons/Ionicons';
-import {MakeOrderNestedNavigator} from './app/components/navigation/MakeOrderNestedNavigator';
-import ActualOrderStateScreen from './app/screens/ActualOrderStateScreen';
-import LoginScreen from './app/screens/LoginScreen';
-import CreateBaguetteScreen from './app/screens/CreateBaguetteScreen';
-import OrderSummaryScreen from './app/screens/OrderSummaryScreen';
-import UpdateBaguetteScreen from './app/screens/UpdateBaguetteScreen';
+import {AppMainNavigator} from './app/components/navigation/AppNavigator';
 
 /*const HomeStack = createStackNavigator();
 const MakeOrderStack = createStackNavigator();
@@ -74,7 +64,7 @@ const ActualOrderStackScreen = ({navigation}) => (
             fontWeight: 'bold'
         }
     }}>
-        <ActualOrderStack.Screen name="ActualOrderState" component={ActualOrderStateScreen} options={{
+        <ActualOrderStack.Screen name="ActualOrderState" component={ActualOrdersStateScreen} options={{
             title: 'Aktivní objednávka',
             headerLeft: () => (
                 <Icon.Button name="md-bulb" size={25} backgroundColor='#009387' onPress={() => navigation.openDrawer()}/>
@@ -94,26 +84,10 @@ export default function App() {
         </NavigationContainer>
     );
 }*/
-const Stack = createStackNavigator();
 export default function App() {
     return (
         <NavigationContainer>
-            <Stack.Navigator
-                screenOptions={{
-                headerStyle: {
-                    backgroundColor: '#009387'
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                    alignSelf: 'center'
-                }
-            }}
-                initialRouteName="Home">
-                <Stack.Screen options={{title:"Domovská stránka"}} name="Home" component={HomeScreen} />
-                <Stack.Screen options={{title:"Vytvořit bagetu"}} name="MakeOrder" component={MakeOrderNestedNavigator} />
-                <Stack.Screen options={{title:"Aktivní objednávka"}} name="ActualOrderState" component={ActualOrderStateScreen}/>
-            </Stack.Navigator>
+            <AppMainNavigator/>
         </NavigationContainer>
     );
 }

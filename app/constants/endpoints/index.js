@@ -6,9 +6,13 @@ export const getIngredientTypeUrl = 'https://pickngo-be.azurewebsites.net/ingred
 
 export const getIngredientsUrl = 'https:/pickngo-be.azurewebsites.net/ingredient/all';
 
+export const getOrdersUrl = 'https:/pickngo-be.azurewebsites.net/baguetteOrder/all';
+
 export const getBaguetteOrderDetailUrl = 'https:/pickngo-be.azurewebsites.net/baguetteOrder/detail/';
 
 export const getBaguetteItemDetailUrl = 'https:/pickngo-be.azurewebsites.net/baguetteItem/detail/';
+
+export const getActualBaguetteOrderUrl = 'https:/pickngo-be.azurewebsites.net/baguetteOrder/actual';
 
 export const createBaguetteOrderUrl = 'https:/pickngo-be.azurewebsites.net/baguetteOrder/create';
 
@@ -25,3 +29,5 @@ export const confirmBaguetteOrderUrl = 'https:/pickngo-be.azurewebsites.net/bagu
 export const removeBaguetteOrderUrl = 'https:/pickngo-be.azurewebsites.net/baguetteOrder/remove/';
 
 export const removeBaguetteItemUrl = 'https:/pickngo-be.azurewebsites.net/baguetteItem/remove/';
+
+export const removeItemUrl = 'https:/pickngo-be.azurewebsites.net/item/remove/';

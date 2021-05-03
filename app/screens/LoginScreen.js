@@ -41,8 +41,8 @@ class LoginScreen extends Component {
                 const userName = jsonResponse.full_name;
                 console.log('USERNAME: ' + userName);
                 if (userName !== undefined) {
-                    // redirect to createBaguette
-                    this.props.navigation.navigate('CreateBaguette');
+                    // redirect to Home Page
+                    this.props.navigation.navigate('Home');
                 } else {
                     // načtení WebView a Login
                     this.setState({isLoading: false});
@@ -87,7 +87,7 @@ class LoginScreen extends Component {
                         AsyncStorage.setItem(ASYNC_STORAGE_USER_KEY, jsonResponse.full_name);
                     })();
                     // redirect to createBaguette
-                    this.props.navigation.navigate('CreateBaguette');
+                    this.props.navigation.navigate('Home');
                     /*(async () => {
                         await this.storeData(jsonResponse.full_name);
                     })()*/

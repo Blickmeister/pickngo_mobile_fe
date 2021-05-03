@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
-import {CircleButton} from '../elements/CircleButton';
+import {CircleButton} from '../../elements/CircleButton';
 import {DataTable} from 'react-native-paper';
-import {createItemUrl, updateItemUrl} from '../../constants/endpoints';
+import {createItemUrl, updateItemUrl} from '../../../constants/endpoints';
 
 class CreateItemComponent extends Component {
 

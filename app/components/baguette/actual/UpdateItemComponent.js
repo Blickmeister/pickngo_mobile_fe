@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import {updateItemUrl} from '../../constants/endpoints';
+import {updateItemUrl} from '../../../constants/endpoints';
 import {DataTable} from 'react-native-paper';
 import {Text, View, StyleSheet} from 'react-native';
-import {CircleButton} from '../elements/CircleButton';
+import {CircleButton} from '../../elements/CircleButton';
 
 class UpdateItemComponent extends Component {
 
@@ -10,10 +10,13 @@ class UpdateItemComponent extends Component {
         super(props);
 
         this.state = {
-            number: this.props.ingredient.amount,
+            number: this.props.item.amount
         };
     }
 
+    /*componentDidMount() {
+        this.setState({number: this.props.ingredient.amount})
+    }*/
     incrementNumber = () => {
         this.setState({number: this.state.number + 1});
         let number = this.state.number + 1;
@@ -27,7 +30,8 @@ class UpdateItemComponent extends Component {
     };
 
     changeItemState(number) {
-        fetch(updateItemUrl + this.props.itemId + '?amount=' + number, {
+        console.log("" + updateItemUrl + this.props.item.id + '?amount=' + number);
+        fetch(updateItemUrl + this.props.item.id + '?amount=' + number, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -58,7 +62,7 @@ class UpdateItemComponent extends Component {
         if (this.state.number <= 0) {
             disableMinusButton = true;
         }
-
+        console.log(this.state.number)
         return (
             <DataTable.Row>
                 <DataTable.Cell>{this.props.ingredient.name}</DataTable.Cell>
