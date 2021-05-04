@@ -8,6 +8,8 @@ import OrderSummaryScreen from '../../screens/order/actual/OrderSummaryScreen';
 import UpdateBaguetteScreen from '../../screens/order/actual/UpdateBaguetteScreen';
 import HistoryOrdersScreen from '../../screens/order/history/HistoryOrdersScreen';
 import HistoryOrderDetailScreen from '../../screens/order/history/HistoryOrderDetailScreen';
+import SpecialOffersScreen from '../../screens/offer/SpecialOffersScreen';
+import OfferSummaryScreen from '../../screens/offer/OfferSummaryScreen';
 
 const Stack = createStackNavigator();
 
@@ -32,5 +34,7 @@ export const AppMainNavigator = () => (
         <Stack.Screen options={{title:"Aktivní objednávky"}} name="ActualOrdersState" component={ActualOrdersStateScreen}/>
         <Stack.Screen options={{title:"Historie objednávek"}} name="HistoryOrders" component={HistoryOrdersScreen}/>
         <Stack.Screen options={{title:"Detail objednávky"}} name="HistoryOrderDetail" component={HistoryOrderDetailScreen}/>
+        <Stack.Screen options={{title:"Speciální nabídky"}} name="SpecialOffers" component={SpecialOffersScreen}/>
+        <Stack.Screen options={{title:"Souhrn objednávky"}} name="SpecialOffersSummary" component={OfferSummaryScreen}/>
     </Stack.Navigator>
 );

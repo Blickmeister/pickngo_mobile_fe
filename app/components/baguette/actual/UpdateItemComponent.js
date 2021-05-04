@@ -14,9 +14,6 @@ class UpdateItemComponent extends Component {
         };
     }
 
-    /*componentDidMount() {
-        this.setState({number: this.props.ingredient.amount})
-    }*/
     incrementNumber = () => {
         this.setState({number: this.state.number + 1});
         let number = this.state.number + 1;
@@ -62,17 +59,17 @@ class UpdateItemComponent extends Component {
         if (this.state.number <= 0) {
             disableMinusButton = true;
         }
-        console.log(this.state.number)
+        console.log(this.state.number);
         return (
             <DataTable.Row>
                 <DataTable.Cell>{this.props.ingredient.name}</DataTable.Cell>
                 <DataTable.Cell>{this.props.ingredient.price}</DataTable.Cell>
                 <DataTable.Cell>
                     <View style={styles.cellCountElement}>
-                        <CircleButton size={15} marginRight={4} color="red" textColor="black" fontSize={12} text="-"
+                        <CircleButton size={18} marginRight={4} color="red" textColor="black" fontSize={15} text="-"
                                       onPress={this.decrementNumber} disable={disableMinusButton}/>
                         <Text>{this.state.number}</Text>
-                        <CircleButton size={15} marginLeft={4} color="green" textColor="black" fontSize={12} text="+"
+                        <CircleButton size={18} marginLeft={4} color="green" textColor="black" fontSize={15} text="+"
                                       onPress={this.incrementNumber} disable={disablePlusButton}/>
                     </View>
                 </DataTable.Cell>
@@ -86,18 +83,7 @@ export default UpdateItemComponent;
 
 // stylizace
 const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-    },
-    itemMargin: {
-        justifyContent: 'space-between',
-        paddingLeft: 25,
-        paddingRight: 25,
-    },
-    containerRow: {
-        flexDirection: 'row',
-    },
     cellCountElement: {
         flexDirection: 'row',
-    },
+    }
 });

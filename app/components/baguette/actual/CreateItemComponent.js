@@ -113,44 +113,14 @@ class CreateItemComponent extends Component {
                 <DataTable.Cell>{this.state.number * this.props.ingredient.price} Kč</DataTable.Cell>
             </DataTable.Row>
         );
-        /* <View style={styles.containerRow}>
-             <View style={styles.containerCell}>
-                 <Text>{this.props.ingredient.name}</Text>
-             </View>
-             <View style={styles.containerCell}>
-                 <Text style={styles.itemMargin}>{this.props.ingredient.price} Kč</Text>
-             </View>
-             <View style={styles.containerCell}>
-                 <CircleButton size={15} marginRight={4} color="red" textColor="black" fontSize={12} text="-"
-                               onPress={this.decrementNumber} disable={disableMinusButton}/>
-                 <Text>{this.state.number}</Text>
-                 <CircleButton size={15} marginLeft={4} color="green" textColor="black" fontSize={12} text="+"
-                               onPress={this.incrementNumber} disable={disablePlusButton}/>
-             </View>
-             <View style={styles.containerCell}>
-                 <Text style={styles.itemMargin}>{this.state.number * this.props.ingredient.price} Kč</Text>
-             </View>
-         </View>
-     ); */
     }
 }
 
 // stylizace
 const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-    },
-    itemMargin: {
-        justifyContent: 'space-between',
-        paddingLeft: 25,
-        paddingRight: 25,
-    },
-    containerRow: {
-        flexDirection: 'row',
-    },
     cellCountElement: {
         flexDirection: 'row',
-    },
+    }
 });
 
 export default CreateItemComponent;

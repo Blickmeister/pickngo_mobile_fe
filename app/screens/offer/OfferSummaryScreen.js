@@ -1,15 +1,16 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, BackHandler, ScrollView, Alert} from 'react-native';
+import {Alert, BackHandler, ScrollView, Text, View, StyleSheet} from 'react-native';
 import {
     confirmBaguetteOrderUrl,
     getBaguetteOrderDetailUrl,
-    removeBaguetteItemUrl, removeBaguetteOrderUrl,
+    removeBaguetteItemUrl,
+    removeBaguetteOrderUrl,
     updateBaguetteOrderUrl,
-} from '../../../constants/endpoints';
-import {ActivityIndicator, DataTable, Button, TextInput} from 'react-native-paper';
+} from '../../constants/endpoints';
+import {ActivityIndicator, Button, DataTable, TextInput} from 'react-native-paper';
 import dateFormat from 'dateformat';
 
-class OrderSummaryScreen extends Component {
+class OfferSummaryScreen extends Component {
 
     constructor(props) {
         super(props);
@@ -22,11 +23,8 @@ class OrderSummaryScreen extends Component {
     }
 
     componentDidMount() {
-        // při každém načtení stránky (komponenty)
-        // this._unsubscribe = this.props.navigation.addListener('focus', () => {
         // získání objednávky
         this.getOrderById();
-        // });
         // registrace listeneru pro event při stisknutí zpětného tlačítka
         this.backHandler = BackHandler.addEventListener(
             'hwBackPress',
@@ -42,7 +40,6 @@ class OrderSummaryScreen extends Component {
     componentWillUnmount() {
         // odregistrování listeneru pro event při stisknutí zpětného tlačítka
         this.backHandler.remove();
-        // this._unsubscribe();
     }
 
     getOrderById() {
@@ -51,8 +48,8 @@ class OrderSummaryScreen extends Component {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*',
-            },
+                'Access-Control-Allow-Origin': '*'
+            }
         })
             .then((response) => response.json())
             .then((jsonResponse) => {
@@ -73,8 +70,8 @@ class OrderSummaryScreen extends Component {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*',
-            },
+                'Access-Control-Allow-Origin': '*'
+            }
         })
             .then((response) => {
                 if (response.ok) {
@@ -102,8 +99,8 @@ class OrderSummaryScreen extends Component {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*',
-            },
+                'Access-Control-Allow-Origin': '*'
+            }
         })
             .then((response) => {
                 if (response.ok) {
@@ -117,23 +114,20 @@ class OrderSummaryScreen extends Component {
                 }
             })
             .catch((err) => console.log('Nepodařilo se upravit objednávku na serveru: ' + err));
-
     }
 
     // potvrzení objednávky na BE
     confirmBaguetteOrder() {
         let actualDate = new Date();
         let dateToSend = dateFormat(actualDate, 'dd-mm-yyyy, HH:MM:ss');
-        console.log("DATE:");
-        console.log(dateToSend.toString());
         const requestParam = '?date=' + dateToSend.toString();
         fetch(confirmBaguetteOrderUrl + this.state.order.id + requestParam, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*',
-            },
+                'Access-Control-Allow-Origin': '*'
+            }
         })
             .then((response) => {
                 if (response.ok) {
@@ -160,8 +154,8 @@ class OrderSummaryScreen extends Component {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*',
-            },
+                'Access-Control-Allow-Origin': '*'
+            }
         })
             .then((response) => {
                 if (response.ok) {
@@ -198,7 +192,6 @@ class OrderSummaryScreen extends Component {
                                                 name: ingredientTypesAll.find(s => s.id === id).name,
                                             };
                                         });
-                                    console.log(ingredientTypes);
                                     // získání všech ingrediencí dané bagety
                                     let ingredientsWithItem = [];
                                     baguette.items.forEach((item) => {
@@ -239,17 +232,7 @@ class OrderSummaryScreen extends Component {
                                                 Cena bagety: {baguette.price} Kč
                                             </Text>
                                             <View style={styles.containerRow}>
-                                                <Button style={{margin: 2}} contentStyle={{padding: 2}} mode="contained"
-                                                        color="blue"
-                                                        onPress={() => this.props.navigation
-                                                            .push('UpdateBaguette',
-                                                                {
-                                                                    baguette: baguette, index: baguette.id,
-                                                                    orderId: this.props.route.params.orderId,
-                                                                })}>
-                                                    Upravit
-                                                </Button>
-                                                <Button style={{margin: 2}} contentStyle={{padding: 2}} mode="contained"
+                                                <Button style={{marginTop: 2, marginLeft:60, marginRight: 50}} contentStyle={{padding: 2}} mode="contained"
                                                         color="red"
                                                         onPress={() => this.deleteBaguetteHandler(baguette.id)}>Smazat</Button>
                                             </View>
@@ -275,6 +258,7 @@ class OrderSummaryScreen extends Component {
             </View>
         );
     }
+
 }
 
 const Header = () => (
@@ -285,7 +269,7 @@ const Header = () => (
     </DataTable.Header>
 );
 
-export default OrderSummaryScreen;
+export default OfferSummaryScreen;
 
 // stylizace
 const styles = StyleSheet.create({

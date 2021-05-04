@@ -48,7 +48,7 @@ class HomeScreen extends Component {
                         <Button title="Objednat bagetu" color='#009387' onPress={() => this.props.navigation.push('CreateBaguette')}/>
                     </View>
                     <View style={styles.optionButton}>
-                        <Button title="Akční nabídka" color='#009387' onPress={() => this.props.navigation.navigate('#')}/>
+                        <Button title="Akční nabídka" color='#009387' onPress={() => this.props.navigation.push('SpecialOffers')}/>
                     </View>
                 </View>
                 <View style={styles.optionsContainer}>
@@ -63,7 +63,7 @@ class HomeScreen extends Component {
                 </View>
                 <View style={styles.optionsContainer}>
                     <View style={styles.lastOptionButton}>
-                        <Button title="Slevové kupóny" color='#009387' onPress={() => this.props.navigation.navigate('#')}/>
+                        <Button title="Slevové kupóny" color='#009387'/>
                     </View>
                 </View>
 

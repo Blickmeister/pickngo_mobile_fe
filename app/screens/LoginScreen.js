@@ -88,9 +88,6 @@ class LoginScreen extends Component {
                     })();
                     // redirect to createBaguette
                     this.props.navigation.navigate('Home');
-                    /*(async () => {
-                        await this.storeData(jsonResponse.full_name);
-                    })()*/
                 }).catch((err) => {
                 console.error('Chyba při přihlášení: ' + err);
                 alert('Přihlášení se nezdařilo');

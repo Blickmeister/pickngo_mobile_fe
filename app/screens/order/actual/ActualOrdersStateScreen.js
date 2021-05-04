@@ -78,7 +78,6 @@ class ActualOrdersStateScreen extends Component {
     }
 
     goHome = () => {
-        console.log('int id: ' + intervalId);
         clearInterval(intervalId);
         this.props.navigation.push('Home');
     };
@@ -125,7 +124,7 @@ class ActualOrdersStateScreen extends Component {
                                                                    orderState={order.state}/>
                                     );
                                 })}
-                                <Button style={{marginTop: 200}}contentStyle={{padding: 2}} mode="contained" color="blue"
+                                <Button style={{marginTop: 20}} contentStyle={{padding: 2}} mode="contained" color="blue"
                                         onPress={this.goHome}>Zpět na hlavní stránku</Button>
                             </View>
                         }

@@ -17,10 +17,6 @@ class UpdateBaguetteDataComponent extends Component {
         };
     }
 
-    /*componentDidMount() {
-        this.setState({})
-    }*/
-
     // Handler pro změnu množství v itemu
     onItemChangeHandler = () => {
         // refresh celkové ceny aktuální bagety při změně itemu (položky)
@@ -50,7 +46,7 @@ class UpdateBaguetteDataComponent extends Component {
         if (this.state.forFirst) {
             if (this.props.selectedPastry.ingredient.id === ingredient.id) {
                 // přichod
-                this.setState({forFirst: false})
+                this.setState({forFirst: false});
                 this.setState({itemId: this.props.selectedPastry.id})
             }
         } else {
@@ -129,7 +125,7 @@ class UpdateBaguetteDataComponent extends Component {
             ingredientsWithItem.push({ingredient: item.ingredient, item: item});
 
         });
-        console.log(this.props.items[0]);
+        let renderLabel = true;
         return (
             <View style={styles.ingredientContainer}>
                 {ingredientTypes.map((type, index) => {
@@ -166,11 +162,11 @@ class UpdateBaguetteDataComponent extends Component {
                         );
                     } else {
                         // jinak výběr počtu
-                        //console.log(ingredientsOfOneType)
                         return (
                             <View key={index} style={{paddingTop: 10}}>
-                                <Text style={{fontWeight: 'bold'}}>Co dovnitř:</Text>
-                                <Text>Vyberte {type.name}:</Text>
+                                {renderLabel && <Text style={{fontWeight: 'bold'}}>Co dovnitř:</Text>}
+                                {renderLabel = false}
+                                <Text>{type.name}:</Text>
                                 <Header/>
                                 {ingredientsOfOneType.map((element, index) => {
                                     return (
@@ -179,12 +175,12 @@ class UpdateBaguetteDataComponent extends Component {
                                                              onItemChange={this.onItemChangeHandler}/>
                                     );
                                 })}
-                                <Text style={{textAlign: 'right'}}>Celková cena
-                                    bagety: {this.state.baguetteItem.price} Kč</Text>
                             </View>
                         );
                     }
                 })}
+                <Text style={{textAlign: 'right'}}>Celková cena
+                    bagety: {this.state.baguetteItem.price} Kč</Text>
             </View>
         );
     }
@@ -208,14 +204,5 @@ const styles = StyleSheet.create({
     },
     ingredientContainer: {
         marginTop: 10,
-    },
-    containerRow: {
-        flexDirection: 'row',
-        width: 100,
-    },
-    itemMargin: {
-        justifyContent: 'space-between',
-        paddingLeft: 25,
-        paddingRight: 25,
-    },
+    }
 });

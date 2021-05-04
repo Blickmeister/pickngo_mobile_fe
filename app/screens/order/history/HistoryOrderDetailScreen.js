@@ -11,7 +11,7 @@ class HistoryOrderDetailScreen extends Component {
 
         this.state = {
             order: {},
-            isLoading: true
+            isLoading: true,
         };
     }
 
@@ -26,8 +26,8 @@ class HistoryOrderDetailScreen extends Component {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*'
-            }
+                'Access-Control-Allow-Origin': '*',
+            },
         })
             .then((response) => response.json())
             .then((jsonResponse) => {
@@ -37,25 +37,27 @@ class HistoryOrderDetailScreen extends Component {
     }
 
     render() {
-        const image = { uri: "https://image.freepik.com/free-vector/white-abstract-background-theme_23-2148830884.jpg" };
+        const image = {uri: 'https://image.freepik.com/free-vector/white-abstract-background-theme_23-2148830884.jpg'};
         return (
             <ImageBackground source={image} style={styles.image}>
-            <View style={styles.container}>
-                <View style={styles.containerWelcome}>
-                    <Text style={styles.welcome}>PickNGo - Detail objednávky č.{this.props.route.params.orderId}</Text>
-                </View>
-                {this.state.isLoading ? <ActivityIndicator size='large' color='green'/> :
-                    <View>
-                        {this.state.order.baguetteItems.map((baguette, index) => {
-                            return (
-                                <HistoryBaguetteDataComponent key={index} index={++index} baguette={baguette}/>
-                                )
-                        })}
+                <View style={styles.container}>
+                    <View style={styles.containerWelcome}>
+                        <Text style={styles.welcome}>PickNGo - Detail objednávky
+                            č.{this.props.route.params.orderId}</Text>
                     </View>
-                }
-            </View>
+                    {this.state.isLoading ? <ActivityIndicator size='large' color='green'/> :
+                        <View>
+                            {this.state.order.baguetteItems.map((baguette, index) => {
+                                return (
+                                    <HistoryBaguetteDataComponent navigation={this.props.navigation} key={index}
+                                                                  index={++index} baguette={baguette}/>
+                                );
+                            })}
+                        </View>
+                    }
+                </View>
             </ImageBackground>
-        )
+        );
     }
 
 }
@@ -81,7 +83,7 @@ const styles = StyleSheet.create({
     },
     image: {
         flex: 1,
-        resizeMode: "cover",
-        justifyContent: "center",
+        resizeMode: 'cover',
+        justifyContent: 'center',
     },
 });

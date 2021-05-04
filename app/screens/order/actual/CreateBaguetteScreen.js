@@ -20,15 +20,7 @@ class CreateBaguetteScreen extends Component {
             isLoading: true,
             baguetteOrderCreated: false,
         };
-        //const {cookies} = props;
-        //this.state.csrfToken = cookies.get('XSRF-TOKEN');
-        //this.login = this.login.bind(this);
-        //this.logout = this.logout.bind(this);
     }
-
-    /*getItem = () => {
-        return AsyncStorage.getItem(ASYNC_STORAGE_USER_KEY);
-    };*/
 
     componentDidMount() {
         // při každém načtení stránky (komponenty)
@@ -36,39 +28,12 @@ class CreateBaguetteScreen extends Component {
             // ověření, zda je uživatel lognutý -> jinak nejde žádný HTTP req
             this.getUserDetail();
         });
-        /* (() => {
-             let user = AsyncStorage.getItem(ASYNC_STORAGE_USER_KEY);
-             if (user !== null && user !== undefined && user !== '') {
-                 // We have data!!
-                 this.setState({user: user, isAuthenticated: true});
-                 console.log("USEROS:" + user);
-             } else {
-                 this.setState({isAuthenticated: false});
-             }
-         })
-         ();*/
-        //console.log('orderId: ' + this.props.orderId);
-        //if (this.props.orderId === undefined) {
-        // nemáme ještě orderId -> nová objednávka
-        // vytvoření nové objednávky
-        //this.createBaguetteOrder();
-        //  } else {
-        // předání orderId pro vytvoření další bagety
-        //  this.setState({orderId: this.props.orderId});
-        //  }
         // registrace listeneru pro event při stisknutí zpětného tlačítka
         this.backHandler = BackHandler.addEventListener(
             'hwBackPress',
             this.backAction,
         );
-        // získání typů ingrediencí a ingrediencí
-        //this.getIngredientTypesAndIngredients();
     }
-
-    /*refresh = () => {
-        this.createBaguetteOrder();
-        this.getIngredientTypesAndIngredients();
-    };*/
 
     componentWillUnmount() {
         // odregistrování listeneru pro event při stisknutí zpětného tlačítka
@@ -83,23 +48,25 @@ class CreateBaguetteScreen extends Component {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Origin': '*'
-            }
+                'Access-Control-Allow-Origin': '*',
+            },
         })
             .then((response) => response.json())
             .then((jsonResponse) => {
                 const userName = jsonResponse.full_name;
                 if (userName !== undefined) {
+                    // vytvoření nové objednávky
                     this.createBaguetteOrder();
+                    // získání typů ingrediencí a ingrediencí
                     this.getIngredientTypesAndIngredients();
                 } else {
                     // načtení Loginu
-                    this.props.navigation.navigate('Login')
+                    this.props.navigation.navigate('Login');
                 }
             }).catch(() => {
             console.log('Uživatel není přihlášený');
             // načtení Loginu
-            //this.props.navigation.push('Login')
+            this.props.navigation.push('Login');
         });
     }
 
@@ -140,7 +107,6 @@ class CreateBaguetteScreen extends Component {
             },
         })
             .then((response) => {
-                //this.setState({baguetteOrderCreated: true}); // TODO pak pryc
                 if (response.ok) {
                     console.log('Objednávka vytvořena');
                     response.json()
@@ -238,39 +204,39 @@ class CreateBaguetteScreen extends Component {
 
     render() {
         let renderBaguetteComponent = false;
-        const image = { uri: "https://image.freepik.com/free-vector/white-abstract-background-theme_23-2148830884.jpg" };
+        const image = {uri: 'https://image.freepik.com/free-vector/white-abstract-background-theme_23-2148830884.jpg'};
         if (!this.state.isLoading && this.state.baguetteOrderCreated) {
             renderBaguetteComponent = true;
             console.log('render? ' + renderBaguetteComponent + ' ID ' + this.state.orderId);
         }
         return (
             <ImageBackground source={image} style={styles.image}>
-            <View style={styles.container}>
-                <ScrollView>
-                    <View style={styles.containerWelcome}>
-                        <Text style={styles.welcome}>PickNGo - Návrh bagety</Text>
-                    </View>
-                    {!renderBaguetteComponent ?
-                        <ActivityIndicator size='large' color='green'/> :
-                        <View>
-                            <CreateBaguetteDataComponent key={this.state.keyForRemount} orderId={this.state.orderId}
-                                                         ingredients={this.state.ingredients}
-                                                         ingredientTypes={this.state.ingredientTypes}/>
-                            <View style={{padding: 10}}>
-                                <Button contentStyle={{padding: 2}} mode="contained" color="blue"
-                                        onPress={this.addNextBaguetteHandler}
-                                        style={{margin: 5}}>Přidat další bagetu</Button>
-                                <Button contentStyle={{padding: 2}} mode="contained" color="green"
-                                        onPress={this.goToOrderSummaryHandler}
-                                        style={{margin: 5}}>Souhrn objednávky</Button>
-                                <Button contentStyle={{padding: 2}} mode="contained" color="red"
-                                        onPress={this.cancelBaguetteOrderHandler}
-                                        style={{margin: 5}}>Zrušit</Button>
-                            </View>
+                <View style={styles.container}>
+                    <ScrollView>
+                        <View style={styles.containerWelcome}>
+                            <Text style={styles.welcome}>PickNGo - Návrh bagety</Text>
                         </View>
-                    }
-                </ScrollView>
-            </View>
+                        {!renderBaguetteComponent ?
+                            <ActivityIndicator size='large' color='green'/> :
+                            <View>
+                                <CreateBaguetteDataComponent key={this.state.keyForRemount} orderId={this.state.orderId}
+                                                             ingredients={this.state.ingredients}
+                                                             ingredientTypes={this.state.ingredientTypes}/>
+                                <View style={{padding: 10}}>
+                                    <Button contentStyle={{padding: 2}} mode="contained" color="blue"
+                                            onPress={this.addNextBaguetteHandler}
+                                            style={{margin: 5}}>Přidat další bagetu</Button>
+                                    <Button contentStyle={{padding: 2}} mode="contained" color="green"
+                                            onPress={this.goToOrderSummaryHandler}
+                                            style={{margin: 5}}>Souhrn objednávky</Button>
+                                    <Button contentStyle={{padding: 2}} mode="contained" color="red"
+                                            onPress={this.cancelBaguetteOrderHandler}
+                                            style={{margin: 5}}>Zrušit</Button>
+                                </View>
+                            </View>
+                        }
+                    </ScrollView>
+                </View>
             </ImageBackground>
         );
     }
@@ -295,38 +261,9 @@ const styles = StyleSheet.create({
         margin: 10,
         color: 'black',
     },
-    contentContainer: {
-        borderWidth: 5,
-        borderColor: 'black',
-        flex: 1,
-        width: 330,
-        height: 420,
-    },
-    typeContainer: {
-        marginTop: 60,
-    },
-    ingredientContainer: {
-        marginTop: 10,
-    },
-    textCenter: {
-        textAlign: 'center',
-    },
-    textBig: {
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    marginAll: {
-        margin: 2,
-    },
-    containerRow: {
-        flexDirection: 'row',
-        padding: 5,
-        color: 'white',
-    },
-    flexContainer: {},
     image: {
         flex: 1,
-        resizeMode: "cover",
-        justifyContent: "center",
+        resizeMode: 'cover',
+        justifyContent: 'center',
     },
 });

@@ -4,6 +4,10 @@ import {Button, DataTable} from 'react-native-paper';
 
 class HistoryBaguetteDataComponent extends Component {
 
+    constructor(props) {
+        super(props)
+    }
+
     render() {
         return (
             <View style={styles.baguetteContainer}>
@@ -20,7 +24,7 @@ class HistoryBaguetteDataComponent extends Component {
                 })}
                 <Text style={styles.textCommon}>Cena za bagetu: {this.props.baguette.price} Kč</Text>
                 <Button style={{marginTop: 15}} contentStyle={{padding: 2}} mode="contained" color="blue"
-                        onPress={() => this.props.navigation.goBack()}>Zpět na přehled objednávek</Button>
+                        onPress={() => {this.props.navigation.goBack()}}>Zpět na přehled objednávek</Button>
             </View>
         )
     }
@@ -42,10 +46,6 @@ const styles = StyleSheet.create({
         marginTop: 20,
         paddingLeft: 5,
         paddingRight: 5
-    },
-    containerRow: {
-        flexDirection: 'row',
-        width: 100
     },
     textCommon: {
         margin: 5

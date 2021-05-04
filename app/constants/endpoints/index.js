@@ -8,6 +8,8 @@ export const getIngredientsUrl = 'https:/pickngo-be.azurewebsites.net/ingredient
 
 export const getOrdersUrl = 'https:/pickngo-be.azurewebsites.net/baguetteOrder/all';
 
+export const getSpecialOffersUrl = 'https:/pickngo-be.azurewebsites.net/specialOffer/all/';
+
 export const getBaguetteOrderDetailUrl = 'https:/pickngo-be.azurewebsites.net/baguetteOrder/detail/';
 
 export const getBaguetteItemDetailUrl = 'https:/pickngo-be.azurewebsites.net/baguetteItem/detail/';
