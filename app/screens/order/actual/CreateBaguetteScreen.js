@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, BackHandler, ScrollView} from 'react-native';
+import {StyleSheet, Text, View, BackHandler, ScrollView, ImageBackground} from 'react-native';
 import CreateBaguetteDataComponent from '../../../components/baguette/actual/CreateBaguetteDataComponent';
 import {
     createBaguetteOrderUrl, getActualBaguetteOrderUrl,
@@ -238,11 +238,13 @@ class CreateBaguetteScreen extends Component {
 
     render() {
         let renderBaguetteComponent = false;
+        const image = { uri: "https://image.freepik.com/free-vector/white-abstract-background-theme_23-2148830884.jpg" };
         if (!this.state.isLoading && this.state.baguetteOrderCreated) {
             renderBaguetteComponent = true;
             console.log('render? ' + renderBaguetteComponent + ' ID ' + this.state.orderId);
         }
         return (
+            <ImageBackground source={image} style={styles.image}>
             <View style={styles.container}>
                 <ScrollView>
                     <View style={styles.containerWelcome}>
@@ -269,6 +271,7 @@ class CreateBaguetteScreen extends Component {
                     }
                 </ScrollView>
             </View>
+            </ImageBackground>
         );
     }
 }
@@ -318,6 +321,12 @@ const styles = StyleSheet.create({
     containerRow: {
         flexDirection: 'row',
         padding: 5,
+        color: 'white',
     },
     flexContainer: {},
+    image: {
+        flex: 1,
+        resizeMode: "cover",
+        justifyContent: "center",
+    },
 });

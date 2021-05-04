@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {getOrdersUrl, homeUrl} from '../../../constants/endpoints';
-import {StyleSheet, Text, View, ScrollView} from 'react-native';
+import {StyleSheet, Text, View, ScrollView, ImageBackground} from 'react-native';
 import {ActivityIndicator, Button, DataTable} from 'react-native-paper';
 
 class HistoryOrdersScreen extends Component {
@@ -64,6 +64,7 @@ class HistoryOrdersScreen extends Component {
     render() {
         let noOrderRender = false;
         let historyOrders = [];
+        const image = { uri: "https://image.freepik.com/free-vector/white-abstract-background-theme_23-2148830884.jpg" };
         if (!this.state.isLoading) {
             if (this.state.orders.length === 0) {
                 noOrderRender = true;
@@ -74,6 +75,7 @@ class HistoryOrdersScreen extends Component {
 
         }
         return (
+            <ImageBackground source={image} style={styles.image}>
             <View style={styles.container}>
                 <ScrollView>
                 <View style={styles.containerWelcome}>
@@ -109,6 +111,7 @@ class HistoryOrdersScreen extends Component {
                 }
                 </ScrollView>
             </View>
+            </ImageBackground>
         );
     }
 }
@@ -150,5 +153,10 @@ const styles = StyleSheet.create({
         margin: 20,
         fontWeight: 'bold',
         color: 'black',
+    },
+    image: {
+        flex: 1,
+        resizeMode: "cover",
+        justifyContent: "center",
     },
 });

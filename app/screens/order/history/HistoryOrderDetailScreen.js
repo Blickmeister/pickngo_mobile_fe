@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {getBaguetteOrderDetailUrl} from '../../../constants/endpoints';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, ImageBackground} from 'react-native';
 import {ActivityIndicator} from 'react-native-paper';
 import HistoryBaguetteDataComponent from '../../../components/baguette/history/HistoryBaguetteDataComponent';
 
@@ -37,7 +37,9 @@ class HistoryOrderDetailScreen extends Component {
     }
 
     render() {
+        const image = { uri: "https://image.freepik.com/free-vector/white-abstract-background-theme_23-2148830884.jpg" };
         return (
+            <ImageBackground source={image} style={styles.image}>
             <View style={styles.container}>
                 <View style={styles.containerWelcome}>
                     <Text style={styles.welcome}>PickNGo - Detail objednávky č.{this.props.route.params.orderId}</Text>
@@ -52,6 +54,7 @@ class HistoryOrderDetailScreen extends Component {
                     </View>
                 }
             </View>
+            </ImageBackground>
         )
     }
 
@@ -75,5 +78,10 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         margin: 10,
         color: 'black',
-    }
+    },
+    image: {
+        flex: 1,
+        resizeMode: "cover",
+        justifyContent: "center",
+    },
 });
