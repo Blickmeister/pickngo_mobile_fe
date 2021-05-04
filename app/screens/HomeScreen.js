@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Button} from 'react-native';
+import {StyleSheet, Text, View, Button, ImageBackground} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ASYNC_STORAGE_USER_KEY} from './LoginScreen';
 
@@ -39,6 +39,7 @@ class HomeScreen extends Component {
     render() {
         let definedUser = this.state.user !== undefined;
         return (
+            <ImageBackground source={require('../resources/bc_menu.jpg')} style={styles.image}>
             <View style={styles.container}>
                 <Text style={styles.welcome}>Vítejte v aplikaci PickNGo</Text>
                 {definedUser && <Text style={styles.textCenter}>Přihlášený uživatel: {this.state.user}</Text>}
@@ -67,6 +68,7 @@ class HomeScreen extends Component {
                 </View>
 
             </View>
+            </ImageBackground>
         );
     }
 }
@@ -81,10 +83,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     welcome: {
-        fontSize: 20,
+        fontSize: 25,
         textAlign: 'center',
         margin: 10,
-        color: 'black',
+        color: 'white',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: -2, height: 2},
+        textShadowRadius: 40,
     },
     contentContainer: {
         borderWidth: 5,
@@ -100,11 +105,23 @@ const styles = StyleSheet.create({
     },
     lastOptionButton: {
       width: 240,
+        marginBottom: 60,
     },
     optionsContainer: {
         flexDirection: "row"
     },
     textCenter: {
+        fontSize: 15,
         textAlign: 'center',
-    }
+        color: 'white',
+        marginBottom: 50,
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: -2, height: 2},
+        textShadowRadius: 40,
+    },
+    image: {
+        flex: 1,
+        resizeMode: "cover",
+        justifyContent: "center",
+    },
 });

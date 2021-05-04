@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, ActivityIndicator, ScrollView} from 'react-native';
+import {Text, View, StyleSheet, ActivityIndicator, ScrollView, ImageBackground} from 'react-native';
 import {homeUrl, getOrdersUrl} from '../../../constants/endpoints';
 import ActualOrdersDataComponent from '../../../components/baguette/actual/ActualOrdersDataComponent';
 import {Button} from 'react-native-paper';
-
 let intervalId;
 
 class ActualOrdersStateScreen extends Component {
@@ -86,6 +85,7 @@ class ActualOrdersStateScreen extends Component {
 
     render() {
         let activeOrders = [];
+        const image = { uri: "https://image.freepik.com/free-vector/white-abstract-background-theme_23-2148830884.jpg" };
         if (!this.state.isLoading) {
             activeOrders = this.state.orders.filter((order) => {
                 return order.state === 1 || order.state === 2 || order.state === 3;
@@ -94,22 +94,25 @@ class ActualOrdersStateScreen extends Component {
         if (activeOrders.length === 0) {
             return (
                 <View style={styles.container}>
+                    <ImageBackground source={image} style={styles.image}>
                     <View style={styles.containerWelcome}>
                         <Text style={styles.welcome}>PickNGo</Text>
                         {this.state.isLoading ? <ActivityIndicator size='large' color='green'/> :
                             <View>
                                 <Text style={styles.textInfoLarge}>Momentálně nemáte aktivní žádnou objednávku</Text>
-                                <Button style={{margin: 2}} contentStyle={{padding: 2}} mode="contained"
+                                <Button style={{marginTop: 20}} contentStyle={{padding: 2}} mode="contained"
                                         color="blue"
                                         onPress={() => this.props.navigation.navigate('Home')}>Návrat do menu</Button>
                             </View>
                         }
                     </View>
+                    </ImageBackground>
                 </View>
             );
         } else {
             return (
                 <View style={styles.container}>
+            <ImageBackground source={image} style={styles.image}>
                     <ScrollView>
                         <View style={styles.containerWelcome}>
                             <Text style={styles.welcome}>PickNGo - Vaše aktuální objednávky</Text>
@@ -122,11 +125,12 @@ class ActualOrdersStateScreen extends Component {
                                                                    orderState={order.state}/>
                                     );
                                 })}
-                                <Button contentStyle={{padding: 2}} mode="contained" color="blue"
+                                <Button style={{marginTop: 200}}contentStyle={{padding: 2}} mode="contained" color="blue"
                                         onPress={this.goHome}>Zpět na hlavní stránku</Button>
                             </View>
                         }
                     </ScrollView>
+            </ImageBackground>
                 </View>
             );
         }
@@ -140,6 +144,7 @@ const styles = StyleSheet.create({
     container: {
         padding: 10,
         flex: 1,
+        backgroundColor: "#eaeaea"
     },
     containerWelcome: {
         justifyContent: 'center',
@@ -155,8 +160,13 @@ const styles = StyleSheet.create({
     textInfoLarge: {
         fontSize: 20,
         textAlign: 'center',
-        margin: 20,
+        margin: 15,
         fontWeight: 'bold',
         color: 'black',
+    },
+    image: {
+        flex: 1,
+        resizeMode: "cover",
+        justifyContent: "center"
     },
 });
